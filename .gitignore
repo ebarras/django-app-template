@@ -127,8 +127,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-.envs/*
+.envs/*/*
 
 # Allow Example ENV Files
-!.envs/.dev/.example-*
-!.envs/.production/.example-*
+!.envs/*/*-example
