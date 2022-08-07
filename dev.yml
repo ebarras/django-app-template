@@ -1,0 +1,95 @@
+version: '3'
+
+volumes:
+  django_app_template_dev_postgres_data: {}
+  django_app_template_dev_postgres_data_backups: {}
+
+services:
+  django: &django
+    build:
+      context: .
+      dockerfile: ./compose/dev/django/Dockerfile
+    image: django_app_template_dev_django
+    container_name: django_app_template_dev_django
+    platform: linux/x86_64
+    depends_on:
+      - postgres
+      - redis
+      # - mailhog
+    volumes:
+      - .:/app:z
+    env_file:
+      - ./.envs/.dev/.django
+      - ./.envs/.dev/.postgres
+    ports:
+      - "8000:8000"
+    command: /start
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: django_app_template_production_postgres
+    container_name: django_app_template_dev_postgres
+    volumes:
+      - django_app_template_dev_postgres_data:/var/lib/postgresql/data:Z
+      - django_app_template_dev_postgres_data_backups:/backups:z
+    env_file:
+      - ./.envs/.dev/.postgres
+
+  # docs:
+  #   image: django_cookie_cutter_local_docs
+  #   container_name: django_cookie_cutter_local_docs
+  #   platform: linux/x86_64
+  #   build:
+  #     context: .
+  #     dockerfile: ./compose/local/docs/Dockerfile
+  #   env_file:
+  #     - ./.envs/.local/.django
+  #   volumes:
+  #     - ./docs:/docs:z
+  #     - ./config:/app/config:z
+  #     - ./django_cookie_cutter:/app/django_cookie_cutter:z
+  #   ports:
+  #     - "9000:9000"
+  #   command: /start-docs
+
+  # mailhog:
+  #   image: mailhog/mailhog:v1.0.0
+  #   container_name: django_cookie_cutter_local_mailhog
+  #   ports:
+  #     - "8025:8025"
+
+  redis:
+    image: redis:6
+    container_name: django_app_template_dev_redis
+
+  celeryworker:
+    <<: *django
+    image: django_app_template_dev_celeryworker
+    container_name: django_app_template_dev_celeryworker
+    depends_on:
+      - redis
+      - postgres
+      # - mailhog
+    ports: []
+    command: /start-celeryworker
+
+  celerybeat:
+    <<: *django
+    image: django_app_template_dev_celerybeat
+    container_name: django_app_template_dev_celerybeat
+    depends_on:
+      - redis
+      - postgres
+      # - mailhog
+    ports: []
+    command: /start-celerybeat
+
+  flower:
+    <<: *django
+    image: django_app_template_dev_flower
+    container_name: django_app_template_dev_flower
+    ports:
+      - "5555:5555"
+    command: /start-flower

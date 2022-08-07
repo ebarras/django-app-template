@@ -1,0 +1,14 @@
+whitenoise==6.2.0  # https://github.com/evansd/whitenoise
+redis==4.3.4  # https://github.com/redis/redis-py
+celery==5.2.7  # pyup: < 6.0  # https://github.com/celery/celery
+django-celery-beat==2.3.0  # https://github.com/celery/django-celery-beat
+flower==1.1.0  # https://github.com/mher/flower
+
+# Django
+# ------------------------------------------------------------------------------
+# Django==4.1  # https://www.djangoproject.com/
+
+# Setting Django back to 4.0.6 for https://github.com/django-extensions/django-extensions/issues/1750 runserver_plus fix
+Django==4.0.6  # https://www.djangoproject.com/
+django-environ==0.9.0  # https://github.com/joke2k/django-environ
+django-redis==5.2.0  # https://github.com/jazzband/django-redis
